@@ -1,1 +1,3 @@
-Interactive map that lets users see animals from specific regions, search facts about them and leave likes on them
+ # Ottertopia
+ 
+ ## An interactive map that lets users view animals from specific regions, read facts about them and leave likes on them
