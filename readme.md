@@ -1,0 +1,1 @@
+Interactive map that lets users see animals from specific regions, search facts about them and leave likes on them
