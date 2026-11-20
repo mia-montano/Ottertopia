@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('login.ejs');
+  res.render('login.ejs', {error: {}});
 });
 
 app.post('/login', async (req, res) => {
@@ -44,7 +44,7 @@ app.post('/login', async (req, res) => {
 
     //select user that matches entered username
     let checkUserQuery = 
-    `SELECT * FROM admin 
+    `SELECT * FROM Accounts 
     WHERE username = ?`;
 
     let params = [username];
@@ -57,9 +57,13 @@ app.post('/login', async (req, res) => {
         req.session.role = 'admin';
         req.session.username = username; //can add more of these
 
-        res.render('home.ejs');
+        let query = 'SELECT * FROM Animals';
+        const [rows] = await pool.query(query);
+        console.log(rows);
+        res.render('animalList.ejs', {animals: rows});
     } else {
-        res.render('login.ejs', {error: 'Bad.'}); //need to add part in login.ejs that renders error message
+        let error = "Username or password is incorrect";
+        res.render('login.ejs', {error: error}); //need to add part in login.ejs that renders error message
     }
 
     //only if they have the correct username and password will it let them see the homepage
@@ -74,7 +78,7 @@ app.post('/createUser', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
-    let createUserSql = `INSERT INTO admin (username, password) VALUES (?, ?)`;
+    let createUserSql = `INSERT INTO Accounts (username, password) VALUES (?, ?)`;
 
     let hashedPassword = await bcrypt.hash(password, 10);
 
@@ -82,7 +86,7 @@ app.post('/createUser', async (req, res) => {
 
     const [rows] = await pool.query(createUserSql, params);
 
-    res.redirect('/');
+    res.redirect('/login');
 });
 
 app.get('/animalList', isUserAuthenticated, async (req, res) => {

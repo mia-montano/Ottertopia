@@ -12,6 +12,10 @@
 
     <h1>Login</h1>
     <form action="/login" method="post">
+        <% if (error.length > 0) { %>
+            <p> <%=error%> </p>
+        <% } %>
+        
         <label for="username-input">Username</label>
         <input id="username-input" name="username">
         <br/>
