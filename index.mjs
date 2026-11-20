@@ -29,8 +29,8 @@ app.use(session({
 }))
 
 //routes
-app.get('/', isUserAuthenticated, (req, res) => {
-  res.render('login.ejs');
+app.get('/', (req, res) => {
+  res.render('home.ejs');
 });
 
 app.get('/login', (req, res) => {
@@ -85,12 +85,12 @@ app.post('/createUser', async (req, res) => {
     res.redirect('/');
 });
 
-app.get('/quotesList', isUserAuthenticated, async (req, res) => {
-    let query = 'SELECT * FROM quotes';
+app.get('/animalList', isUserAuthenticated, async (req, res) => {
+    let query = 'SELECT * FROM Animals';
     const [rows] = await pool.query(query);
     console.log(rows);
     
-    res.render('quotes.ejs', {quotes: rows});
+    res.render('animalList.ejs', {animals: rows});
 });
 
 app.get('/logout', isUserAuthenticated, async (req, res) => {
