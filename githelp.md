@@ -1,4 +1,4 @@
-1. Please have a seperate branch for every feature you work on and name it 'project/branch-name' or 'project/your-name/branch-name'
+1. Please have a seperate branch for every feature you work on and name it 'project/branch-name'
 
 2. All branches must be merged via a pull request so we can track the history of the project
     Steps for this:

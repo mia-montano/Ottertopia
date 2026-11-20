@@ -2,6 +2,8 @@
 
 import express from 'express';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
+import session from 'express-session'
 
 const app = express();
 
