@@ -21,10 +21,85 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 
-//route localhost:3000/
-app.get('/', (req, res) => {
-  res.send('Hello Express app!')
+app.set('trust proxy', 1) //trust proxy first
+app.use(session({
+    secret: 'keyboard-cat', //password for lockbox holding every session - realistically should be set to update periodically
+    resave: false,
+    saveUninitialized: true,
+}))
+
+//routes
+app.get('/', isUserAuthenticated, (req, res) => {
+  res.render('login.ejs');
 });
+
+app.get('/login', (req, res) => {
+  res.render('login.ejs');
+});
+
+app.post('/login', async (req, res) => {
+    //retireving entered information
+    let username = req.body.username;
+    let password = req.body.password;
+
+    //select user that matches entered username
+    let checkUserQuery = 
+    `SELECT * FROM admin 
+    WHERE username = ?`;
+
+    let params = [username];
+    let [ rows ] = await pool.query(checkUserQuery, params);
+
+    //if no user is found... they typed in the wrong one
+    if(rows.length > 0 && await bcrypt.compare(password, rows[0].password)) {
+
+        req.session.authenticated = true;
+        req.session.role = 'admin';
+        req.session.username = username; //can add more of these
+
+        res.render('home.ejs');
+    } else {
+        res.render('login.ejs', {error: 'Bad.'}); //need to add part in login.ejs that renders error message
+    }
+
+    //only if they have the correct username and password will it let them see the homepage
+
+})
+
+app.get('/newUser', (req, res) => {
+    res.render('newUser.ejs');
+})
+
+app.post('/createUser', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+
+    let createUserSql = `INSERT INTO admin (username, password) VALUES (?, ?)`;
+
+    let hashedPassword = await bcrypt.hash(password, 10);
+
+    let params = [username, hashedPassword];
+
+    const [rows] = await pool.query(createUserSql, params);
+
+    res.redirect('/');
+});
+
+app.get('/quotesList', isUserAuthenticated, async (req, res) => {
+    let query = 'SELECT * FROM quotes';
+    const [rows] = await pool.query(query);
+    console.log(rows);
+    
+    res.render('quotes.ejs', {quotes: rows});
+});
+
+app.get('/logout', isUserAuthenticated, async (req, res) => {
+    //destroys session assigned to user
+    req.session.destroy(callback => {
+        //this is what happens after the session is destroyed
+        res.redirect('/');
+    })
+})
 
 app.get("/dbTest", async(req, res) => {
   try {
@@ -34,8 +109,18 @@ app.get("/dbTest", async(req, res) => {
         console.error("Database error:", err);
         res.status(500).send("Database error!");
     }
-});//dbTest from canvas, not meant for our database yet but can use as outline in future
+});//dbTest
 
 app.listen(3000, ()=>{
     console.log("Express server running")
-})
+});
+
+
+//function to check that the user is authenticated
+function isUserAuthenticated(req, res, next) {
+    if(req.session.authenticated) {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
