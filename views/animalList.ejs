@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <%- include('partials/includes.ejs') %>
 </head>
 <body>
+    <%- include('partials/navbar.ejs') %>
+
     <!-- loop through the quotes and print them out -->
     <h1>Animal List</h1>
     <% for (let animal of animals) { %>
         <p><%= animal.name %></p>
     <% } %>
+
+    <%- include('partials/footer.ejs') %>
 </body>
 </html>
