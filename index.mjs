@@ -13,10 +13,10 @@ app.use(express.static('public'));
 app.use(express.urlencoded({extended:true}));
 
 const pool = mysql.createPool({
-    host: "your_hostname",
-    user: "your_username",
-    password: "your_password",
-    database: "your_database",
+    host: "mkorvuw3sl6cu9ms.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    user: "p8i00djo9ywgn9oj",
+    password: "a8tvefeif236p8va",
+    database: "qk24r961ww1v9hrc",
     connectionLimit: 10,
     waitForConnections: true
 });
